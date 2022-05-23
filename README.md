@@ -33,7 +33,7 @@ CREATE TABLE public.turma (
 
 ## Configurando a API para execução
 
-As credenciais para acesso ao banco de dados deverão ser alteradas no arquivo application.properties
+As credenciais para acesso ao banco de dados e o nome do contexto da API deverão ser alterados no arquivo application.properties
 
 ## Sobre
 
