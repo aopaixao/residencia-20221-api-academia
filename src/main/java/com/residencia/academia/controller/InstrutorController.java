@@ -2,6 +2,8 @@ package com.residencia.academia.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.residencia.academia.dto.InstrutorDTO;
 import com.residencia.academia.entity.Instrutor;
 import com.residencia.academia.exception.InstrutorNotFoundException;
 import com.residencia.academia.exception.NoSuchElementFoundException;
@@ -33,6 +35,14 @@ public class InstrutorController {
 		return new ResponseEntity<>(instrutorList, HttpStatus.OK);
 	}
 
+	@GetMapping("/dto/{id}")
+	public ResponseEntity<InstrutorDTO> findInstrutorDTOById(@PathVariable Integer id) {
+		InstrutorDTO instrutorDTO = instrutorService.findInstrutorDTOById(id);
+		return new ResponseEntity<>(instrutorDTO, HttpStatus.OK);
+	}
+	
+	/*
+	//Validacao simples com o IF
 	@GetMapping("/{id}")
 	public ResponseEntity<Instrutor> findInstrutorById(@PathVariable Integer id) {
 		Instrutor instrutor = instrutorService.findInstrutorById(id);
@@ -41,13 +51,29 @@ public class InstrutorController {
 		else
 			return new ResponseEntity<>(instrutor, HttpStatus.OK);
 	}
+	*/
 
+	@GetMapping("/{id}")
+	public ResponseEntity<Instrutor> findInstrutorById(@PathVariable Integer id) {
+		Instrutor instrutor = instrutorService.findInstrutorById(id);
+		if(null == instrutor)
+			throw new NoSuchElementFoundException("Não foi encontrado Instrutor com o id " + id);
+		else
+			return new ResponseEntity<>(instrutor, HttpStatus.OK);
+	}
+	
 	@PostMapping
-	public ResponseEntity<Instrutor> saveInstrutor(@RequestBody Instrutor instrutor) {
+	public ResponseEntity<Instrutor> saveInstrutor(@Valid @RequestBody Instrutor instrutor) {
 		Instrutor novoInstrutor = instrutorService.saveInstrutor(instrutor);
 		return new ResponseEntity<>(novoInstrutor, HttpStatus.CREATED);
 	}
 
+	@PostMapping("/dto")
+	public ResponseEntity<InstrutorDTO> saveInstrutorDTO(@RequestBody InstrutorDTO instrutorDTO) {
+		InstrutorDTO novoInstrutorDTO = instrutorService.saveInstrutorDTO(instrutorDTO);
+		return new ResponseEntity<>(novoInstrutorDTO, HttpStatus.CREATED);
+	}
+	
 	@PutMapping
 	public ResponseEntity<Instrutor> updateInstrutor(@RequestBody Instrutor instrutor) {
 		Instrutor novoInstrutor = instrutorService.updateInstrutor(instrutor);
@@ -63,11 +89,14 @@ public class InstrutorController {
 		return new ResponseEntity<>("", HttpStatus.OK);
 	}
 
+	/*
+	//Tratamento Local de Exceção
 	@ExceptionHandler(InstrutorNotFoundException.class)
 	public ResponseEntity<String> handleNoInstrutorFoundException(InstrutorNotFoundException exception) {
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
 				.body(exception.getErrMsg());
 	}
+	*/
 
 }

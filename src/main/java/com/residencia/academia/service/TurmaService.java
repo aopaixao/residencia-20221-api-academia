@@ -23,6 +23,10 @@ public class TurmaService {
 				null;
 	}
 
+	public Turma findTurmaByIdSemVerificacao(Integer id) {
+		return turmaRepository.findById(id).get();
+	}
+	
 	public Turma saveTurma(Turma turma) {
 		return turmaRepository.save(turma);
 	}
@@ -34,5 +38,15 @@ public class TurmaService {
 	public void deleteTurma(Integer id) {
 		turmaRepository.deleteById(id);
 	}
-
+	/*
+	public Boolean deleteTurmaComConferencia(Integer id) {
+		if(turmaRepository.findById(id).isPresent()) {
+			turmaRepository.deleteById(id);
+			return true;
+		}else {
+			return false;
+		}
+	}
+	*/
+	
 }

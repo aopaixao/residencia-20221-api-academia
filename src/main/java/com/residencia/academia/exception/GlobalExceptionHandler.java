@@ -1,6 +1,9 @@
 /*
 package com.residencia.academia.exception;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,28 +18,49 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NoSuchElementFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Object> handleNoSuchElementFoundException(NoSuchElementFoundException itemNotFoundException, WebRequest request) {
+    public ResponseEntity<Object> handleNoSuchElementFoundException
+    	(NoSuchElementFoundException itemNotFoundException, WebRequest request) {
         return buildErrorResponse(itemNotFoundException, HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(NumberFormatException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<Object> handleNumberFormatException
+    (NumberFormatException itemNumberFormatException, WebRequest request) {
+    	return buildErrorResponse(itemNumberFormatException, HttpStatus.CONFLICT, request);
+    }
+    
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<Object> handleAllUncaughtException(Exception exception, WebRequest request) {
-        return buildErrorResponse(exception, "Ocorreu um erro desconhecido", HttpStatus.INTERNAL_SERVER_ERROR, request);
+    public ResponseEntity<Object> handleAllUncaughtException
+    	(Exception exception, WebRequest request) {
+        return buildErrorResponse(exception, 
+        		"Ocorreu um erro desconhecido", 
+        		HttpStatus.INTERNAL_SERVER_ERROR, 
+        		request);
     }
 
     private ResponseEntity<Object> buildErrorResponse(Exception exception,
                                                       HttpStatus httpStatus,
                                                       WebRequest request) {
-        return buildErrorResponse(exception, exception.getMessage(), httpStatus, request);
+        return buildErrorResponse(exception, 
+        		exception.getMessage(), 
+        		httpStatus, 
+        		request);
     }
 
-    private ResponseEntity<Object> buildErrorResponse(Exception exception,
-                                                      String message,
-                                                      HttpStatus httpStatus,
-                                                      WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(httpStatus.value(), message);
-        return ResponseEntity.status(httpStatus).body(errorResponse);
+    private ResponseEntity<Object> 
+    	buildErrorResponse(Exception exception,
+                           String message,
+                           HttpStatus httpStatus,
+                           WebRequest request) {
+        //ErrorResponse errorResponse = new ErrorResponse(httpStatus.value(), message);
+        //return ResponseEntity.status(httpStatus).body(errorResponse);
+    	List<String> details = new ArrayList<>();
+        details.add(exception.getLocalizedMessage());
+    	ErrorResponse errorResponse = new ErrorResponse(httpStatus.value(), "Registro não encontrado", details);
+    	//return ResponseEntity.status(httpStatus).body(errorResponse);
+    	return new ResponseEntity(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @Override
